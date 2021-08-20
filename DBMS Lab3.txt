@@ -1,0 +1,124 @@
+Task1:
+CREATE TABLE Department
+(
+Dept_name VARCHAR2(6),
+Dept_id INT,
+Established_Year INT,
+CONSTRAINT dept_name_chck PRIMARY KEY(Dept_name)
+);
+CREATE TABLE student
+(
+Student_Id INT,
+Name VARCHAR2(20),
+CGPA VARCHAR2(10),
+Hometown VARCHAR2(15),
+Mobile_No VARCHAR2(15),
+S_Department VARCHAR(10),
+CONSTRAINT std_id_chk PRIMARY KEY(Student_Id),
+CONSTRAINT refer_deptname FOREIGN KEY(S_Department) REFERENCES Department(Dept_name)
+);
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+CREATE TABLE Student_info
+(
+Student_Id INT,
+Student_name VARCHAR2(20),
+CGPA VARCHAR2(10),
+Hometown VARCHAR2(15),
+Mobile_No VARCHAR2(15),
+S_Department VARCHAR(10),
+CONSTRAINT std_id_chk PRIMARY KEY(Student_Id),
+CONSTRAINT refer_deptname FOREIGN KEY(S_Department) REFERENCES Department(Dept_name)
+);
+
+CREATE TABLE Employes_info
+(
+E_ID INT,
+Name VARCHAR2(25),
+Salary INT,
+HomeTown VARCHAR2(10),
+S_department VARCHAR(10),
+CONSTRAINT e_id_chk PRIMARY KEY(E_ID),
+CONSTRAINT refer_edepartment FOREIGN KEY(S_Department) REFERENCES Department(dept_name)
+);
+INSERT INTO Department VALUES('CSE',4,1999);
+INSERT INTO Department VALUES('EEE',2,1998);
+INSERT INTO Student_info VALUES(38,'Tasmi','4.00','Rangpur','0173594439','CSE');
+INSERT INTO Student_info VALUES(38,'Tiham','4.00','Rangpur','01735524439','EEE');
+ERROR at line 1:
+ORA-00001: unique constraint (SYSTEM.STD_ID_CHK) violated
+INSERT INTO Employes_info VALUES(1,'Tuba','500','Rangpur','CSE');
+INSERT INTO Employes_info VALUES(1,'Tiham','500','Rangpur','CSE');
+ERROR at line 1:
+ORA-00001: unique constraint (SYSTEM.STD_ID_CHK) violated
+SELECT Student_ID, Dept_ID
+FROM Student_info . Department;
+As the department table acts as the mother table for the relational table,
+since there is not philosophy column there, we have to add one to the main
+table department at first, only then we can add this option and informations
+to other tables.
+
+
+Task2:
+CREATE TABLE Artist
+(
+Artist_ID INT,
+Name VARCHAR2(20),
+Band_name VARCHAR2(30),
+CONSTRAINT e_id_chhhk PRIMARY KEY(Artist_ID)
+);
+CREATE TABLE Album
+(
+Album_ID INT,
+Name VARCHAR2(10),
+Releasing_year INT,
+Artist_ID INT,
+CONSTRAINT e_artist_id_chk PRIMARY KEY(Album_ID),
+CONSTRAINT refer_albumid FOREIGN KEY(Artist_ID) REFERENCES Artist(Artist_ID)
+);
+CREATE TABLE Song
+(
+Song VARCHAR2(10),
+Song_name VARCHAR2(20),
+Song_Artist_ID INT,
+Genre VARCHAR2(6),
+CONSTRAINT song_chk PRIMARY KEY(Song),
+CONSTRAINT refer_artistchkkk FOREIGN KEY(Song_Artist_ID) REFERENCES Artist(Artist_ID)
+);
+INSERT INTO Artist VALUES(1,'Halo','AB');
+INSERT INTO Artist VALUES(2,'Ane','Pink');
+INSERT INTO Album VALUES(4,'shtd',2000,1);
+INSERT INTO Album VALUES(4,'spdtd',2200,1);
+ERROR at line 1:
+ORA-00001: unique constraint (SYSTEM.E_ARTIST_ID_CHK) violated
+INSERT INTO Song VALUES('abfsj','udk',1,'bgju');
+INSERT INTO Song VALUES('abfsj','udk',1,'bsaku');
+ERROR at line 1:
+ORA-00001: unique constraint (SYSTEM.SONG_CHK) violated
+
+TASK3:
+ALTER TABLE Employes_info
+DROP COLUMN Hometown;
+ALTER TABLE Department
+ADD Building varchar(5);
+CREATE TABLE Song_Newtable
+(
+Song VARCHAR2(10),
+Track_number VARCHAR2(20),
+Song_Artist_ID INT,
+Genre VARCHAR2(6),
+CONSTRAINT songbdsf_chk PRIMARY KEY(Song),
+CONSTRAINT refersjd_artistchkkk FOREIGN KEY(Song_Artist_ID) REFERENCES Artist(Artist_ID)
+);
+INSERT INTO Song_Newtable
+SELECT * FROM Song;
+UPDATE Song SET Track-number = Song_name;
+ALTER TABLE Song 
+DROP COLUMN Song_name;
+ERROR at line 1:
+ORA-00927: missing equal sign
+
+ALTER TABLE Album
+DROP CONSTRAINT e_artist_id_chk;
+ALTER TABLE Album
+ADD CONSTRAINT album_chk_bfjs PRIMARY KEY (Album_ID, Name);

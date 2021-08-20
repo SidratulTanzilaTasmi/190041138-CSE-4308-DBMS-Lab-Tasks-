@@ -1,0 +1,92 @@
+1. SELECT * FROM CITIZEN;
+
+2. SELECT C_NAME, AGE, OCCUPATION FROM CITIZEN;
+
+3.  SELECT  C_NAME FROM CITIZEN WHERE C_HOME = 'Dhaka';
+
+4. SELECT * FROM CITIZEN WHERE SALARY > 45000;
+
+5. SELECT  C_NAME, C_HOME  FROM CITIZEN WHERE AGE < 45;
+
+6. SELECT * FROM CITIZEN WHERE GENDER = 'Female';
+
+7. SELECT * FROM CITIZEN WHERE OCCUPATION  IN ('Engineer' , 'Doctor' , 'Retired');
+
+8. SELECT C_ID, C_NAME, SALARY FROM CITIZEN WHERE OCCUPATION  IN ('Musician' , 'Business');
+
+9.SELECT * FROM CITIZEN WHERE OCCUPATION = 'Doctor' OR OCCUPATION = 'Engineer';
+
+10. SELECT * FROM CITIZEN WHERE OCCUPATION = 'Doctor' ORDER BY SALARY ASC; 
+
+11. SELECT C_NAME, AGE FROM CITIZEN ORDER BY AGE DESC, C_NAME ASC;
+
+12.SELECT DISTINCT C_HOME FROM CITIZEN;
+SELECT DISTINCT C_HOME AS Unique_District FROM CITIZEN;
+
+13. UPDATE CITIZEN SET SALARY = (1+ 0.4)* SALARY WHERE OCCUPATION IN ((SELECT DISTINCT OCCUPATION FROM CITIZEN WHERE NOT OCCUPATION = 'Retired')); 
+SELECT SALARY FROM CITIZEN WHERE OCCUPATION IN((SELECT DISTINCT OCCUPATION FROM CITIZEN WHERE NOT OCCUPATION = 'Retired'));
+
+14.SELECT * FROM CITIZEN WHERE GENDER = 'Male' AND SALARY > 50000;
+
+15. SELECT * FROM CITIZEN WHERE SALARY BETWEEN 30000 AND 50000;
+
+16.SELECT SALARY FROM CITIZEN WHERE AGE NOT BETWEEN 30 AND 55;
+
+17.SELECT * FROM CITIZEN TO Updated_Citizen;
+ORA-00933: SQL command not properly ended
+drop table Updated_Citizen;
+CREATE TABLE Updated_Citizen (
+	C_ID NUMBER (3),
+	C_NAME VARCHAR2 (10),
+	C_HOME VARCHAR2 (10),
+	AGE NUMBER (2),
+	OCCUPATION VARCHAR2 (15),
+	GENDER VARCHAR2 (6),
+	SALARY NUMBER,
+	CONSTRAINTS PK_CITIZEN_updated PRIMARY KEY (C_ID)
+);
+INSERT INTO Updated_Citizen VALUES (1, 'Alice', 'Dhaka', 25, 'Teacher', 'Male', 50000);
+INSERT INTO Updated_Citizen VALUES (2, 'Bob', 'Dhaka', 56, 'Service', 'Male', 60000);
+INSERT INTO Updated_Citizen VALUES (3, 'Charlie', 'Ctg', 71, 'Retired', 'Male', 10000);
+INSERT INTO Updated_Citizen VALUES (4, 'Erin', 'Ctg', 13, 'Student', 'Female', 500);
+INSERT INTO Updated_Citizen VALUES (5, 'Dave', 'Dhaka', 45, 'Service', 'Male', 40000);
+INSERT INTO Updated_Citizen VALUES (6, 'Faythe', 'Gazipur', 54, 'Doctor', 'Female', 55000);
+INSERT INTO Updated_Citizen VALUES (7, 'Grace', 'Gazipur', 65, 'Musician', 'Female', 5000);
+INSERT INTO Updated_Citizen VALUES (8, 'Ivan', 'Dhaka', 56, 'Engineer', 'Male', 60000);
+INSERT INTO Updated_Citizen VALUES (9, 'Frank', 'Ctg', 23, 'Student', 'Male', 1000);
+INSERT INTO Updated_Citizen VALUES (10, 'Micheal', 'Comilla', 32, 'Teacher', 'Male', 45000);
+INSERT INTO Updated_Citizen VALUES (11, 'Niaj', 'Comilla', 51, 'Farmer', 'Male', 20000);
+INSERT INTO Updated_Citizen VALUES (12, 'Heidi', 'Khulna', 15, 'Student', 'Female', 1500);
+INSERT INTO Updated_Citizen VALUES (13, 'Ted', 'Ctg', 25, 'Business', 'Male', 100000);
+INSERT INTO Updated_Citizen VALUES (14, 'Walter', 'Comilla', 52, 'Doctor', 'Male', 70000);
+INSERT INTO Updated_Citizen VALUES (15, 'Victor', 'Gazipur', 53, 'Teacher', 'Male', 50000);
+INSERT INTO Updated_Citizen VALUES (16, 'Judy', 'Dhaka', 35, 'Musician', 'Female', 50000);
+INSERT INTO Updated_Citizen VALUES (17, 'Pat', 'Khulna', 43, 'Service', 'Male', 50000);
+INSERT INTO Updated_Citizen VALUES (18, 'Olivia', 'Khulna', 34, 'Service', 'Female', 45000);
+INSERT INTO Updated_Citizen VALUES (19, 'Trent', 'Ctg', 16, 'Student', 'Male', 500);
+INSERT INTO Updated_Citizen VALUES (20, 'Peggy', 'Comilla', 32, 'Business', 'Female', 120000);
+INSERT INTO Updated_Citizen VALUES (21, 'Wendy', 'Ctg', 25, 'Musician', 'Female', 100000);
+INSERT INTO Updated_Citizen (22, 'Oscar', 'Gazipur', 14, 'Student', 'Male', 400);
+INSERT INTO Updated_Citizen VALUES (23, 'Mallet', 'Dhaka', 25, 'Engineer', 'Male', 50000);
+UPDATE Updated_Citizen SET C_HOME = 'Cumilla' WHERE C_HOME = 'Comilla';
+
+18. DELETE FROM Updated_Citizen WHERE C_ID BETWEEN 1 AND 10;
+
+19. UPDATE Updated_Citizen SET AGE = AGE + 10 , SALARY = (0.3+1)* SALARY;
+
+20.
+SELECT * 
+FROM CITIZEN 
+INNER JOIN Updated_Citizen 
+ON CITIZEN.SALARY = Updated_Citizen.SALARY;
+//no data found
+SELECT C_ID,C_NAME,SALARY
+FROM CITIZEN NATURAL JOIN Updated_Citizen;
+//no data found
+
+SELECT *
+FROM CITIZEN 
+INNER JOIN Updated_Citizen 
+ON CITIZEN.C_ID = Updated_Citizen.C_ID;
+
+

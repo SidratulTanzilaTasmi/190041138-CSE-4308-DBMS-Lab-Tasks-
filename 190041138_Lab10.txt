@@ -1,0 +1,171 @@
+
+SETSERVEROUTPUT ON;
+
+Task1:
+
+CREATE OR REPLACE FUNCTION total_items_shipped ( in_year INT )
+RETURN NUMBER
+IS
+total_items NUMBER(10,0):=0;
+
+BEGIN
+
+        --we get the total shipped items here
+	SELECT SUM (Quantity)
+	INTO total_number_of_items
+	FROM ORDERS, ORDER_ITEMS
+	WHERE ORDERS.Order_ID = ORDER_ITEMS.Order_ID AND ORDERS.ORDER_YEAR = in_year 
+        AND ORDERS.Status = 1;
+        --we return the total number of sales here
+	RETURN total_number_of_items;
+
+END;
+/
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2002 : ' || total_items_shipped(2002));
+END;
+/
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2006 : ' || total_items_shipped(2006));
+END;
+/
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2017 : ' || total_items_shipped(2017));
+END;
+/
+
+Output:
+
+2002 : 1423
+2006 : 1242
+2017 : 972
+
+
+Task - 2
+
+CREATE OR REPLACE FUNCTION most_sold_item (in_year INT)
+RETURN NUMBER
+IS
+most_sold NUMBER(10,0):=0;
+BEGIN
+
+        --we get the total number of shipped items here
+	SELECT Item_ID
+	INTO most_sold
+	FROM 
+        (
+        SELECT Item_ID , COUNT(ORDER_ITEMS.Item_ID) AS "Distinct Items"
+	FROM ORDERS,ORDER_ITEMS
+        WHERE ORDERS.Order_ID = ORDER_ITEMS.Order_ID   
+        AND ORDERS.ORDER_YEAR = in_year  
+        AND ORDERS.Status = 1
+	GROUP BY ORDER_ITEMS.Item_ID
+	ORDER BY "Distinct Items" DESC
+        )
+	WHERE ROWNUM =1;
+	
+        --we return the most number of items sold
+	RETURN most_sold;
+END;
+/
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2002 : ' || most_sold_item(2002));
+END;
+/
+
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2006 : ' || most_sold_item(2006));
+END;
+/
+
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2017 : ' || most_sold_item(2017));
+END;
+/
+
+Output:
+
+2002 : 2
+2006 : 3
+2017 : 1
+
+
+Task - 3
+
+CREATE OR REPLACE FUNCTION profit_estimation (in_year INT)
+RETURN NUMBER
+IS
+
+total_potential_revenue NUMBER(10,0) := 0;
+total_produced_revenue NUMBER(10,0) := 0;
+revenue_percentage NUMBER(10,3) := 0;
+year_status VARCHAR2(20);
+
+BEGIN
+
+        --calculate the total number of revenue here
+	SELECT SUM(Quantity * PPU)
+    	INTO total_potential_revenue
+    	FROM ORDERS, ORDER_ITEMS
+    	WHERE ORDERS.Order_ID = ORDER_ITEMS.Order_ID 
+        AND ORDERS.ORDER_YEAR = in_year;
+
+        -- calculate the profitable number of revenue, then from the ratio we will get the percentage
+    	SELECT SUM(Quantity * PPU)
+    	INTO total_produced_revenue
+    	FROM ORDERS, ORDER_ITEMS
+    	WHERE ORDERS.Order_ID = ORDER_ITEMS.Order_ID  AND ORDERS.ORDER_YEAR = in_year 
+        AND ORDERS.Status = 1;
+
+    	revenue_percentage := (total_produced_revenue / total_potential_revenue);
+        revenue_percentage := revenue_percentage* 100;
+	--making compare here to see what kind of year 
+    	IF revenue_percentage >= 50 AND revenue_percentage <= 65 THEN
+	year_status := 'a Average Year';
+    	ELSIF revenue_percentage > 65 AND revenue_percentage <= 79 THEN
+	year_status := 'a Good Year';	
+    	ELSIF revenue_percentage >= 79 THEN
+	year_status := 'an Excellent Year';	
+	ELSE
+	year_status := 'A year of Loss';
+    	END IF;
+	
+	DBMS_OUTPUT.PUT_LINE ('The following year is  ' || year_status);
+        --return the produced revenue
+	RETURN total_produced_revenue;
+END;
+/
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2002 : ' || profit_estimation(2002));
+END;
+/
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2006 : ' || profit_estimation(2006));
+END;
+/
+
+
+BEGIN
+DBMS_OUTPUT.PUT_LINE ('2017 : ' || profit_estimation(2017));
+END;
+/
+
+Output:
+
+The following year is a Average Year
+2002 : 9940
+
+The following  year is a Good Year
+2006 : 8842
+
+The following  year is an Average Year
+2017 : 6166
+
+

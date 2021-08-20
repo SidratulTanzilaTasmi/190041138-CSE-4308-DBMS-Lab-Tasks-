@@ -1,0 +1,127 @@
+Task1:
+
+DROP TABLE Dept;
+CREATE TABLE Dept
+(
+        Dept_ID INT,
+	Name_Dept VARCHAR(20),
+	Desc_Dept VARCHAR2(20),
+	CONSTRAINT Dept_pk PRIMARY KEY (Dept_ID)
+);
+
+CREATE TABLE Product_Catagory
+(
+Cat_ID INT,
+Name_of_Product VARCHAR2(20),
+Dept_ID INT,
+CONSTRAINT Product_Catagory_pk PRIMARY KEY(Cat_ID),
+CONSTRAINT Product_Catagory_fk FOREIGN KEY(Dept_ID) REFERENCES Dept(Dept_ID)
+);
+
+CREATE TABLE Product
+(
+	P_ID INT,
+	Cat_ID INT,
+	Name_of_Product VARCHAR2(20),
+	Price_of_Product INT,
+	Desc_of_Product VARCHAR2(50),
+	CONSTRAINT Product_pk PRIMARY KEY (P_ID),
+	CONSTRAINT Product_fk FOREIGN KEY (Cat_ID) REFERENCES Product_Catagory (Cat_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Shopping_Cart
+(
+	Cart_ID INT,
+	Date_Added VARCHAR2(20),
+	CONSTRAINT Shopping_Cart_pk PRIMARY KEY (Cart_ID)
+        
+);
+
+CREATE TABLE Product_in_Shopping_Cart
+(
+	Cart_ID INT,
+	P_ID INT,
+	CONSTRAINT Product_in_Cart_fk1 FOREIGN KEY (Cart_ID) REFERENCES Shopping_Cart (Cart_ID),
+	CONSTRAINT Product_in_Cart_fk2 FOREIGN KEY (P_ID) REFERENCES Product (P_ID),
+	CONSTRAINT Product_in_Cart_pk PRIMARY KEY (Cart_ID , P_ID)
+);
+
+Here , no delete cascade is used because deleting entry from reference table in many to many relationship will
+affect the actual entry in the main table.
+
+CREATE TABLE Customer
+(
+	C_ID INT,
+	Email VARCHAR(20),
+	Name VARCHAR(20),
+	Address VARCHAR(20),
+	Phone_No VARCHAR(20),
+	Card_Info VARCHAR(20),
+	CONSTRAINT customer_pk PRIMARY KEY (C_ID, Email)
+);
+
+CREATE TABLE Order_of_customer
+(
+	Order_ID INT,
+	Shopping_Info VARCHAR2(20),
+	C_ID INT,
+	Email VARCHAR2(20),
+	Cart_ID INT,
+	CONSTRAINT Order_pk PRIMARY KEY (Order_ID),
+	CONSTRAINT Order_fk1 FOREIGN KEY (C_ID, Email) REFERENCES Customer (C_ID, Email) ON DELETE CASCADE,
+	CONSTRAINT Order_fk2 FOREIGN KEY (Cart_ID) REFERENCES Shopping_Cart (Cart_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Add_item
+(
+	C_ID INT,
+	Email VARCHAR2(20),
+	Cart_ID INT,
+	P_ID INT,
+	Quantity INT,
+	CONSTRAINT Add_item_fk1 FOREIGN KEY (C_ID, Email) REFERENCES Customer (C_ID, Email) ON DELETE,
+	CONSTRAINT Add_item_fk2 FOREIGN KEY (Cart_ID) REFERENCES Product_Catagory (Cart_ID),
+	CONSTRAINT Add_item_fk3 FOREIGN KEY (P_ID) REFERENCES Product (P_ID),
+	CONSTRAINT Add_item_pk PRIMARY KEY (C_ID, Cart_ID)
+);
+
+
+Here , no delete cascade is used because deleting entry from reference table in many to many relationship will
+affect the actual entry in the main table.
+
+Task2:
+
+CREATE VIEW Shopping_Cart_Details 
+AS
+SELECT Cart_ID,Date_Added,P_ID,Name,Price
+FROM Shopping_Cart,Product
+WHERE 
+Shopping_Cart.P_ID=Product_in_Shopping_Cart.P_ID;
+
+CREATE VIEW AS Product_Purchase_Total_l
+AS
+SELECT Shopping_Cart_Details.Date_Added,Count(C_ID)
+GROUP BY Shopping_Cart_Details.Date, Shopping_Cart_Details.Cart_ID;
+
+
+
+Task3:
+
+CREATE OR REPLACE VIEW AS Customer_Purchase_History
+SELECT C_ID, Email, Address, Phone_No, Card_Info, P_ID, Quantity, Opened FROM Customer, Add_item
+WHERE Customer.C_ID = Add_item.C_ID;
+
+
+Task4:
+
+CREATE USER Customer IDENTIFIED BY Customer138;
+CREATE USER SalePerson IDENTIFIED BY SalePerson138;
+CREATE USER Manager IDENTIFIED BY Manager138;
+
+CREATE ROLE CUSTOMER_;
+CREATE ROLE SALE_PERSON;
+CREATE ROLE MANAGER_;
+GRANT SELECT ON Customer to CUSTOMER_;
+GRANT SELECT, INSERT, DELETE, UPDATE ON Customer to SALE_PERSON;
+GRANT SELECT, INSERT, DELETE, UPDATE ON Shopping_Cart,Order to SALE_PERSON;
+GRANT CUSTOMER_, SALE_PERSON TO MANAGER;
